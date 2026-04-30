@@ -1,0 +1,10 @@
+[stereo]
+name = "xpans Stereo Monitor"
+[headphones]
+name = "xpans Headphones Monitor"
+[mono]
+name = "xpans Mono Monitor"
+[exporter]
+name = "xpans Scene Exporter"
+[editor]
+name = "xpans Scene Editor"

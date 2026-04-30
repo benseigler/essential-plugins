@@ -1,0 +1,21 @@
+[workspace]
+resolver = "3"
+members = [
+    "shared",
+    "plugins/exporter",
+    "plugins/editor",
+    "xtask",
+    "xpans_spe_nih",
+    "plugins/stereo",
+    "plugins/headphones",
+    "plugins/mono",
+    "source",
+    "render",
+]
+
+[profile.release]
+opt-level = 3
+
+# These caused issues when building for aarch64-unknown-linux-gnu.
+# lto = true
+# codegen-units = 1

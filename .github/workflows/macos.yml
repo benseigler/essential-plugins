@@ -1,0 +1,147 @@
+name: "macOS"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build macOS"
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    steps:
+      - name: "Setup Rust toolchain"
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.arch }}-apple-darwin
+
+      - uses: actions/checkout@v5
+
+      - name: "Build for ${{ matrix.arch }}"
+        run: bash build-all.sh ${{ matrix.arch }}-apple-darwin
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macOS-${{ matrix.arch }}
+          path: bundles/${{ matrix.arch }}-apple-darwin/
+          compression-level: 0
+
+  sign:
+    name: "Sign"
+    needs: build
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    environment: "macOS Sign and Notarize"
+    steps:
+      - uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.APPLICATION_CERT }}
+          p12-password: ${{ secrets.APPLICATION_CERT_PASSWORD }}
+
+      - name: Verify certificate
+        run: |
+          APPLICATION_CERT_INFO=$(security find-identity -v | grep "Developer ID Application")
+          APPLICATION_CERT_ID=$(echo "$APPLICATION_CERT_INFO" | awk -F'"' '{print $2}')
+          echo "APPLICATION_CERT_ID=$APPLICATION_CERT_ID" >> $GITHUB_ENV
+          echo "Certificates imported."
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: macOS-${{ matrix.arch }}
+
+      - name: "Sign all bundles"
+        run: |
+          for bundle in *.clap; do
+            codesign --force -s "$APPLICATION_CERT_ID" -v "$bundle" --deep --strict --options=runtime --timestamp
+          done
+          for bundle in *.vst3; do
+            codesign --force -s "$APPLICATION_CERT_ID" -v "$bundle" --deep --strict --options=runtime --timestamp
+          done
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macOS-${{ matrix.arch }}-signed
+          path: ./
+          compression-level: 0
+
+  package:
+    name: Generate installer package
+    needs: sign
+    runs-on: macos-latest
+    environment: "macOS Sign and Notarize"
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    steps:
+      - uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.INSTALLER_CERT }}
+          p12-password: ${{ secrets.INSTALLER_CERT_PASSWORD }}
+
+      - name: Verify certificate
+        run: |
+          INSTALLER_CERT_INFO=$(security find-identity -v | grep "Developer ID Installer")
+          INSTALLER_CERT_ID=$(echo "$INSTALLER_CERT_INFO" | awk -F'"' '{print $2}')
+          echo "INSTALLER_CERT_ID=$INSTALLER_CERT_ID" >> $GITHUB_ENV
+          echo "Certificates imported."
+
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            packaging
+            macos-pkg.sh
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: macOS-${{ matrix.arch }}-signed
+          path: signed-bundles/
+
+      - name: "Generate package"
+        run: sh macos-pkg.sh ${{ matrix.arch }} "0.1.0" signed-bundles $INSTALLER_CERT_ID
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macOS-${{ matrix.arch }}-pkg
+          path: "./packaging/Install xpans Essential Plugins (${{ matrix.arch }}).pkg"
+          compression-level: 0
+
+  notarize:
+    name: "Notarize"
+    needs: package
+    runs-on: macos-latest
+    environment: "macOS Sign and Notarize"
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: macOS-${{ matrix.arch }}-pkg
+
+      - name: "Import App Store Connect API Key"
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+        run: |
+          echo $APPLE_API_KEY_BASE64 | base64 --decode > AppStoreConnect.p8
+          APPLE_API_KEY_PATH=$(realpath AppStoreConnect.p8)
+          echo "APPLE_API_KEY_PATH=$APPLE_API_KEY_PATH" >> $GITHUB_ENV
+
+      - name: "Notarize and staple"
+        run: |
+          xcrun notarytool submit "Install xpans Essential Plugins (${{ matrix.arch }}).pkg" \
+            --issuer ${{ secrets.APPLE_API_ISSUER }} \
+            --key-id ${{ secrets.APPLE_API_KEY_ID }} \
+            --key $APPLE_API_KEY_PATH \
+            --wait;
+          xcrun stapler staple "Install xpans Essential Plugins (${{ matrix.arch }}).pkg";
+          rm $APPLE_API_KEY_PATH;
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macOS-${{ matrix.arch }}-pkg-notarized
+          path: "*.pkg"
+          compression-level: 0

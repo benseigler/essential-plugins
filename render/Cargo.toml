@@ -1,0 +1,14 @@
+[package]
+name = "render"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git" }
+xpans_spe_nih = { path = "../xpans_spe_nih" }
+shared = { path = "../shared" }
+xpans_render = "0.1.0"
+xpans_violet = "0.1.0"
+xpans_spe = "0.1.0"
+num = "0.4.3"
+wreath = "0.1.0"

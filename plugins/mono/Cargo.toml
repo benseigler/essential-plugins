@@ -1,0 +1,15 @@
+[package]
+name = "mono"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["clap", "vst3"]
+clap = []
+vst3 = []
+
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git" }

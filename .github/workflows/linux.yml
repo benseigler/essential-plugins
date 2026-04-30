@@ -1,0 +1,49 @@
+name: "Linux"
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build for Linux"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "x86_64"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "Build for ${{ matrix.arch }}"
+        run: sh ${{ matrix.arch }}-unknown-linux-gnu.sh
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux-${{ matrix.arch }}
+          path: bundles/${{ matrix.arch }}-unknown-linux-gnu/
+          compression-level: 0
+          
+  package:
+    name: "Package"
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "x86_64"]
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux-${{ matrix.arch }}
+          path: build
+          
+      - name: "Compress"
+        run: |
+          mkdir -p "xpans Essential Plugins/CLAP/"
+          mkdir -p "xpans Essential Plugins/VST3/"
+          cp -r build/*.clap "xpans Essential Plugins/CLAP/"
+          cp -r build/*.vst3 "xpans Essential Plugins/VST3/"
+          tar -c "xpans Essential Plugins/" | xz -z9e - > "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
+      
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux-${{ matrix.arch }}-bundled
+          path: "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
+          compression-level: 0

@@ -1,0 +1,10 @@
+FROM ghcr.io/xpans-audio/linux-build-environments-x86_64:latest
+RUN apt-get update; apt-get install --assume-yes \
+    libx11-dev:amd64 \
+    libx11-xcb-dev:amd64 \
+    libgl1-mesa-dev:amd64 \
+    libxcb1-dev:amd64 \
+    libxcb-dri2-0-dev:amd64 \
+    libxcb-icccm4-dev:amd64 \
+    libxcursor-dev:amd64 \
+    libwayland-dev:amd64 \

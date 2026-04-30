@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf8' ?>
+<installer-gui-script minSpecVersion="2">
+    <title>xpans Essential Plugins</title>
+    <os-version min="10.13" />
+    <license file="EULA" />
+    <readme file="README" />
+    <choices-outline>
+        <line choice="vst3" />
+        <line choice="clap" />
+    </choices-outline>
+    <choice
+        id="vst3"
+        visible="true"
+        start_selected="true"
+        title="xpans Essential Plugins (VST3)"
+    >
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.HeadphoneMonitor.vst3.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.HeadphoneMonitor.vst3.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.StereoMonitor.vst3.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.StereoMonitor.vst3.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.MonoMonitor.vst3.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.MonoMonitor.vst3.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.SceneEditor.vst3.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.SceneEditor.vst3.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.SceneExporter.vst3.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.SceneExporter.vst3.pkg</pkg-ref>
+    </choice>
+    <choice
+        id="clap"
+        visible="true"
+        start_selected="true"
+        title="xpans Essential Plugins (CLAP)"
+    >
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.HeadphoneMonitor.clap.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.HeadphoneMonitor.clap.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.StereoMonitor.clap.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.StereoMonitor.clap.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.MonoMonitor.clap.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.MonoMonitor.clap.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.SceneEditor.clap.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.SceneEditor.clap.pkg</pkg-ref>
+        <pkg-ref
+            id="audio.xpans.EssentialPlugins.SceneExporter.clap.pkg"
+            version="0.1.0"
+            onConclusion="none"
+        >audio.xpans.EssentialPlugins.SceneExporter.clap.pkg</pkg-ref>
+    </choice>
+</installer-gui-script>
