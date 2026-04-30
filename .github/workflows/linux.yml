@@ -20,7 +20,7 @@ jobs:
           name: linux-${{ matrix.arch }}
           path: bundles/${{ matrix.arch }}-unknown-linux-gnu/
           compression-level: 0
-          
+
   package:
     name: "Package"
     needs: build
@@ -33,7 +33,7 @@ jobs:
         with:
           name: linux-${{ matrix.arch }}
           path: build
-          
+
       - name: "Compress"
         run: |
           mkdir -p "xpans Essential Plugins/CLAP/"
@@ -41,9 +41,9 @@ jobs:
           cp -r build/*.clap "xpans Essential Plugins/CLAP/"
           cp -r build/*.vst3 "xpans Essential Plugins/VST3/"
           tar -c "xpans Essential Plugins/" | xz -z9e - > "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
-      
+
       - uses: actions/upload-artifact@v7
         with:
-          name: linux-${{ matrix.arch }}-bundled
+          name: linux-${{ matrix.arch }}-packaged
           path: "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
           compression-level: 0

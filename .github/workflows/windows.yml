@@ -11,7 +11,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           target: ${{ matrix.arch }}-pc-windows-msvc
-          
+
       - uses: actions/checkout@v6
 
       - name: "Build for ${{ matrix.arch }}"
@@ -21,5 +21,30 @@ jobs:
         with:
           name: windows-${{ matrix.arch }}
           path: bundles\${{ matrix.arch }}-pc-windows-msvc\
-      
-    
+
+  package:
+    name: "Package"
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "x86_64"]
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: windows-${{ matrix.arch }}
+          path: build
+
+      - name: "Compress"
+        run: |
+          mkdir -p "xpans Essential Plugins/CLAP/"
+          mkdir -p "xpans Essential Plugins/VST3/"
+          cp -r build/*.clap "xpans Essential Plugins/CLAP/"
+          cp -r build/*.vst3 "xpans Essential Plugins/VST3/"
+          zip -q -9 -r "xpans Essential Plugins (Windows ${{ matrix.arch }}).zip" "xpans Essential Plugins/"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-${{ matrix.arch }}-packaged
+          path: "xpans Essential Plugins (Windows ${{ matrix.arch }}).zip"
+          compression-level: 0
