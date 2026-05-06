@@ -48,5 +48,5 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: linux-${{ matrix.arch }}-packaged
-          path: "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
+          path: "xpans Essential Plugins v${{ needs.build.outputs.version }} (Linux ${{ matrix.arch }}).tar.xz"
           compression-level: 0
