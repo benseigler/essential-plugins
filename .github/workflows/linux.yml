@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: "Set version"
+        run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
+
       - name: "Build for ${{ matrix.arch }}"
         run: sh ${{ matrix.arch }}-unknown-linux-gnu.sh
 
