@@ -9,10 +9,13 @@ jobs:
     strategy:
       matrix:
         arch: ["aarch64", "x86_64"]
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v6
 
       - name: "Set version"
+        id: set-version
         run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
 
       - name: "Build for ${{ matrix.arch }}"
@@ -43,7 +46,7 @@ jobs:
           mkdir -p "xpans Essential Plugins/VST3/"
           cp -r build/*.clap "xpans Essential Plugins/CLAP/"
           cp -r build/*.vst3 "xpans Essential Plugins/VST3/"
-          tar -c "xpans Essential Plugins/" | xz -z9e - > "xpans Essential Plugins (Linux ${{ matrix.arch }}).tar.xz"
+          tar -c "xpans Essential Plugins/" | xz -z9e - > "xpans Essential Plugins v${{ needs.build.outputs.version }} (Linux ${{ matrix.arch }}).tar.xz"
 
       - uses: actions/upload-artifact@v7
         with:
