@@ -1,24 +1,30 @@
 name: Windows
 on: workflow_dispatch
 jobs:
+  version:
+    name: "Get version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "Set version"
+        id: set-version
+        run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
+    
   build:
     name: "Build for Windows"
     runs-on: windows-latest
     strategy:
       matrix:
         arch: ["aarch64", "x86_64"]
-    outputs:
-      version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           target: ${{ matrix.arch }}-pc-windows-msvc
 
       - uses: actions/checkout@v6
-
-      - name: "Set version"
-        id: set-version
-        run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
 
       - name: "Build for ${{ matrix.arch }}"
         run: bash build-all.sh ${{ matrix.arch }}-pc-windows-msvc
@@ -30,7 +36,7 @@ jobs:
 
   package:
     name: "Package"
-    needs: build
+    needs: ["version", "build"]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,10 +53,10 @@ jobs:
           mkdir -p "xpans Essential Plugins/VST3/"
           cp -r build/*.clap "xpans Essential Plugins/CLAP/"
           cp -r build/*.vst3 "xpans Essential Plugins/VST3/"
-          zip -q -9 -r "xpans Essential Plugins v${{ needs.build.outputs.version }} (Windows ${{ matrix.arch }}).zip" "xpans Essential Plugins/"
+          zip -q -9 -r "xpans Essential Plugins v${{ needs.version.outputs.version }} (Windows ${{ matrix.arch }}).zip" "xpans Essential Plugins/"
 
       - uses: actions/upload-artifact@v7
         with:
           name: windows-${{ matrix.arch }}-packaged
-          path: "xpans Essential Plugins v${{ needs.build.outputs.version }} (Windows ${{ matrix.arch }}).zip"
+          path: "xpans Essential Plugins v${{ needs.version.outputs.version }} (Windows ${{ matrix.arch }}).zip"
           compression-level: 0
