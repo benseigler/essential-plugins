@@ -42,4 +42,4 @@ for f in "${!format_installs[@]}"; do
     done
 done
 cd packaging
-productbuild --distribution distribution.xml --sign "$CERTIFICATE_ID" --timestamp "Install xpans Essential Plugins (${ARCH}).pkg"
+productbuild --distribution distribution.xml --sign "$CERTIFICATE_ID" --timestamp "Install xpans Essential Plugins v${VERSION} (${ARCH}).pkg"
