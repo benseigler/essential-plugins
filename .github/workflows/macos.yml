@@ -4,14 +4,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  version:
+    name: "Get version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "Set version"
+        id: set-version
+        run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
+
   build:
     name: "Build macOS"
     runs-on: macos-latest
     strategy:
       matrix:
         arch: [aarch64, x86_64]
-    outputs:
-      version: ${{ steps.set-version.outputs.version }}
     steps:
       - name: "Setup Rust toolchain"
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -19,10 +29,6 @@ jobs:
           target: ${{ matrix.arch }}-apple-darwin
 
       - uses: actions/checkout@v5
-
-      - name: "Set version"
-        id: set-version
-        run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
 
       - name: "Build for ${{ matrix.arch }}"
         run: bash build-all.sh ${{ matrix.arch }}-apple-darwin
@@ -75,7 +81,7 @@ jobs:
 
   package:
     name: Generate installer package
-    needs: ["build", "sign"]
+    needs: ["version", "sign"]
     runs-on: macos-latest
     environment: "macOS Sign and Notarize"
     strategy:
@@ -107,17 +113,17 @@ jobs:
           path: signed-bundles/
 
       - name: "Generate package"
-        run: sh macos-pkg.sh ${{ matrix.arch }} ${{ needs.build.outputs.version }} signed-bundles $INSTALLER_CERT_ID
+        run: sh macos-pkg.sh ${{ matrix.arch }} ${{ needs.version.outputs.version }} signed-bundles $INSTALLER_CERT_ID
 
       - uses: actions/upload-artifact@v7
         with:
           name: macOS-${{ matrix.arch }}-pkg
-          path: "./packaging/Install xpans Essential Plugins v${{ needs.build.outputs.version }} (${{ matrix.arch }}).pkg"
+          path: "./packaging/Install xpans Essential Plugins v${{ needs.version.outputs.version }} (${{ matrix.arch }}).pkg"
           compression-level: 0
 
   notarize:
     name: "Notarize"
-    needs: package
+    needs: ["version", "package"]
     runs-on: macos-latest
     environment: "macOS Sign and Notarize"
     strategy:
@@ -138,12 +144,12 @@ jobs:
 
       - name: "Notarize and staple"
         run: |
-          xcrun notarytool submit "Install xpans Essential Plugins (${{ matrix.arch }}).pkg" \
+          xcrun notarytool submit "Install xpans Essential Plugins v${{ needs.version.outputs.version }} (${{ matrix.arch }}).pkg" \
             --issuer ${{ secrets.APPLE_API_ISSUER }} \
             --key-id ${{ secrets.APPLE_API_KEY_ID }} \
             --key $APPLE_API_KEY_PATH \
             --wait;
-          xcrun stapler staple "Install xpans Essential Plugins (${{ matrix.arch }}).pkg";
+          xcrun stapler staple "Install xpans Essential Plugins v${{ needs.version.outputs.version }} (${{ matrix.arch }}).pkg";
           rm $APPLE_API_KEY_PATH;
 
       - uses: actions/upload-artifact@v7
