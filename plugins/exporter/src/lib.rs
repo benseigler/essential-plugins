@@ -12,17 +12,21 @@ mod editor;
 
 use crossbeam_channel::{Receiver, Sender};
 use nih_plug::prelude::*;
-use nih_plug_vizia::ViziaState;
+use nih_plug_iced::{
+    WindowState, application, create_iced_editor,
+    iced::{self, PollSubNotifier},
+};
 use shared::{PASSTHRU_LAYOUT, sysex};
 use xpans_spe_nih::SpeBundle;
-use xpans_spe_nih::spe::{ApplyMessage, Message};
+use xpans_spe_nih::spe::{ApplyMessage, Message as SpeMessage};
 use xpans_xsr::{Changes, Event, Record, Sample};
 
-use crate::editor::{FromEditorMessage, ToEditorMessage};
+use crate::editor::{FromEditorMessage, State, ToEditorMessage, Ui, UiMessage};
 
 type RecordMap = BTreeMap<i64, BTreeMap<u16, Changes<f32>>>;
 #[derive(Default)]
 pub struct SceneExporter {
+    notifier: PollSubNotifier,
     recv_from_ui: Option<Receiver<FromEditorMessage>>,
     send_to_ui: Option<Sender<ToEditorMessage>>,
     params: Arc<PluginParams>,
@@ -38,11 +42,11 @@ pub struct SceneExporter {
     scene_end: i64,
 }
 impl SceneExporter {
-    fn add_current_event(&mut self, source: u16, event: Message<f32>) {
+    fn add_current_event(&mut self, source: u16, event: SpeMessage<f32>) {
         let source = self.current.entry(source).or_default();
         source.apply_message(event);
     }
-    fn record_event(&mut self, sample: i64, source: u16, event: Message<f32>) {
+    fn record_event(&mut self, sample: i64, source: u16, event: SpeMessage<f32>) {
         let sample = self.record_map.entry(sample).or_default();
         let source = sample.entry(source).or_default();
         source.apply_message(event);
@@ -52,14 +56,17 @@ impl SceneExporter {
             let _ = sender.send(ToEditorMessage::ExportUnarm);
         }
         self.exporting = false;
+        self.notifier.notify();
     }
     fn set_scene_start(&mut self, sample: i64) {
         self.params.scene_start.store(sample, Ordering::Release);
         self.scene_start = sample;
+        self.notifier.notify();
     }
     fn set_scene_end(&mut self, sample: i64) {
         self.params.scene_end.store(sample, Ordering::Release);
         self.scene_end = sample;
+        self.notifier.notify();
     }
     fn set_export_path(&mut self, path: PathBuf) {
         let mut locked = self.params.export_path.lock().unwrap();
@@ -68,13 +75,13 @@ impl SceneExporter {
         if let Some(sender) = &self.send_to_ui {
             let _ = sender.send(ToEditorMessage::SetExportPath(path));
         }
+        self.notifier.notify();
     }
 }
 
 #[derive(Params)]
 pub struct PluginParams {
-    #[persist = "editor-state"]
-    editor_state: Arc<ViziaState>,
+    window_state: Arc<WindowState>,
     #[persist = "export-path"]
     export_path: Mutex<PathBuf>,
     #[persist = "scene-start"]
@@ -85,7 +92,7 @@ pub struct PluginParams {
 impl Default for PluginParams {
     fn default() -> Self {
         Self {
-            editor_state: editor::default_state(),
+            window_state: WindowState::from_logical_size(800, 600),
             export_path: Mutex::new(Default::default()),
             scene_start: Default::default(),
             scene_end: Default::default(),
@@ -121,12 +128,23 @@ impl Plugin for SceneExporter {
         let (send_to_ui, recv_to_ui) = crossbeam_channel::unbounded();
         self.recv_from_ui = Some(recv_from_ui);
         self.send_to_ui = Some(send_to_ui);
-        editor::create(
-            self.params.clone(),
-            send_from_ui,
-            recv_to_ui,
-            self.exporting,
-            self.params.editor_state.clone(),
+        create_iced_editor(
+            self.params.window_state.clone(),
+            State {
+                params: self.params.clone(),
+                send_from_ui,
+                recv_to_ui,
+                exporting: self.exporting,
+                export_path: self.export_path.clone(),
+            },
+            self.notifier.clone(),
+            Default::default(),
+            |editor_state, nih_ctx| {
+                application(editor_state, nih_ctx, Ui::new, Ui::update, Ui::view)
+                    .theme(Ui::theme)
+                    .subscription(|_| iced::poll_events().map(|_| UiMessage::Poll))
+                    .run()
+            },
         )
     }
     fn initialize(
