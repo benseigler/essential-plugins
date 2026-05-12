@@ -7,4 +7,4 @@ edition = "2021"
 # nih_plug_xtask = { git = "https://github.com/robbert-vdh/nih-plug.git" }
 
 # This fork adds `bundle-only`.
-nih_plug_xtask = { git = "https://github.com/benseigler/nih_plug_xtask.git", commit = "7425dd998a32abfc3c0626695a60429f416fae73" }
+nih_plug_xtask = { git = "https://github.com/benseigler/nih_plug_xtask.git", rev = "7425dd998a32abfc3c0626695a60429f416fae73" }
