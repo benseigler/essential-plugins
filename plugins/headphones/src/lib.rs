@@ -3,7 +3,7 @@ use std::{num::NonZero, sync::Arc};
 use nih_plug::prelude::*;
 use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
 use shared::PanLawOption;
-use xpans_headphones::distance::{DistanceCurve, Exponential, Linear};
+use xpans_headphones::distance::{DistanceCurve, Exponential, Linear, SquareRoot};
 use xpans_headphones::{Interpreter, Processor, pan_law::PanLaw};
 use xpans_spe_nih::SpeBundle;
 use xpans_violet::{RendererBuilder, audio_input::interpolation::linear::LinearInterpolator};
@@ -53,6 +53,8 @@ enum DistanceCurveOption {
     Linear,
     #[name = "Exponential"]
     Exponential,
+    #[name = "Square Root"]
+    SquareRoot,
 }
 impl Default for DistanceCurveOption {
     fn default() -> Self {
@@ -65,6 +67,7 @@ impl DistanceCurveOption {
         match self {
             DistanceCurveOption::Linear => Box::new(Linear),
             DistanceCurveOption::Exponential => Box::new(Exponential),
+            DistanceCurveOption::SquareRoot => Box::new(SquareRoot),
         }
     }
 }
