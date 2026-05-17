@@ -1,4 +1,4 @@
-use nih_plug::{midi::NoteEvent, prelude::SysExMessage};
+use nice_plug::{midi::NoteEvent, prelude::SysExMessage};
 pub use xpans_spe_midi::spe;
 use xpans_spe_midi::{read_message, spe::Message, write_message};
 

@@ -11,14 +11,14 @@ use std::{
 mod editor;
 
 use crossbeam_channel::{Receiver, Sender};
-use nih_plug::prelude::*;
-use nih_plug_iced::{
+use nice_plug::prelude::*;
+use nice_plug_iced::{
     WindowState, application, create_iced_editor,
     iced::{self, PollSubNotifier},
 };
 use shared::{PASSTHRU_LAYOUT, sysex};
-use xpans_spe_nih::SpeBundle;
-use xpans_spe_nih::spe::{ApplyMessage, Message as SpeMessage};
+use xpans_spe_nice::SpeBundle;
+use xpans_spe_nice::spe::{ApplyMessage, Message as SpeMessage};
 use xpans_xsr::{Changes, Event, Record, Sample};
 
 use crate::editor::{FromEditorMessage, State, ToEditorMessage, Ui, UiMessage};
@@ -139,8 +139,8 @@ impl Plugin for SceneExporter {
             },
             self.notifier.clone(),
             Default::default(),
-            |editor_state, nih_ctx| {
-                application(editor_state, nih_ctx, Ui::new, Ui::update, Ui::view)
+            |editor_state, nice_ctx| {
+                application(editor_state, nice_ctx, Ui::new, Ui::update, Ui::view)
                     .theme(Ui::theme)
                     .subscription(|_| iced::poll_events().map(|_| UiMessage::Poll))
                     .run()
@@ -272,7 +272,7 @@ impl ClapPlugin for SceneExporter {
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::Utility];
 }
 #[cfg(feature = "clap")]
-nih_export_clap!(SceneExporter);
+nice_export_clap!(SceneExporter);
 
 #[cfg(feature = "vst3")]
 impl Vst3Plugin for SceneExporter {
@@ -285,4 +285,4 @@ impl Vst3Plugin for SceneExporter {
     ];
 }
 #[cfg(feature = "vst3")]
-nih_export_vst3!(SceneExporter);
+nice_export_vst3!(SceneExporter);

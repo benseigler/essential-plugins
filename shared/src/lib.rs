@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use nih_plug::prelude::*;
+use nice_plug::prelude::*;
 use xpans_common_lr::{Linear, PanLaw, Sine, SquareRoot};
 
 pub const PASSTHRU_LAYOUT: AudioIOLayout = AudioIOLayout {

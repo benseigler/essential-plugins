@@ -1,5 +1,5 @@
-use nih_plug::prelude::*;
-use xpans_spe_nih::SpeBundle;
+use nice_plug::prelude::*;
+use xpans_spe_nice::SpeBundle;
 
 #[inline]
 pub fn spe_editor_passthru<C, P>(context: &mut C, editing_ids: &[u16])
