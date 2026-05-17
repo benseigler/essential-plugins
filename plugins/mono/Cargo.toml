@@ -12,4 +12,4 @@ clap = []
 vst3 = []
 
 [dependencies]
-nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git" }
+nice-plug = { git = "https://codeberg.org/BillyDM/nice-plug.git" }
