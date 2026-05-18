@@ -1,11 +1,11 @@
 use std::{num::NonZero, sync::Arc};
 
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
 use shared::PanLawOption;
 use xpans_headphones::distance::{DistanceCurve, Exponential, Linear, SquareRoot};
 use xpans_headphones::{Interpreter, Processor, pan_law::PanLaw};
-use xpans_spe_nice::SpeBundle;
+use xpans_spe_nih::SpeBundle;
 use xpans_violet::{RendererBuilder, audio_input::interpolation::linear::LinearInterpolator};
 
 type RenderHandlerType = RenderHandler<
@@ -246,7 +246,7 @@ impl Vst3Plugin for HeadphoneMonitor {
 }
 
 #[cfg(feature = "clap")]
-nice_export_clap!(HeadphoneMonitor);
+nih_export_clap!(HeadphoneMonitor);
 
 #[cfg(feature = "vst3")]
-nice_export_vst3!(HeadphoneMonitor);
+nih_export_vst3!(HeadphoneMonitor);

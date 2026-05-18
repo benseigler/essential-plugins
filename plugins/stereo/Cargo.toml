@@ -12,8 +12,8 @@ clap = []
 vst3 = []
 
 [dependencies]
-nice-plug = { git = "https://codeberg.org/BillyDM/nice-plug.git" }
-xpans_spe_nice = { path = "../../xpans_spe_nice" }
+nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git" }
+xpans_spe_nih = { path = "../../xpans_spe_nih" }
 xpans_violet = { version = "0.1.0", default-features = false }
 xpans_stereo = "0.1.0"
 shared = { path = "../../shared" }

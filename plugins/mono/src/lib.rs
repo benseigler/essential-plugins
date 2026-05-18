@@ -1,6 +1,6 @@
 use std::{num::NonZero, sync::Arc};
 
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 
 #[derive(Default)]
 struct MonoMonitor {}
@@ -86,7 +86,7 @@ impl Vst3Plugin for MonoMonitor {
 }
 
 #[cfg(feature = "clap")]
-nice_export_clap!(MonoMonitor);
+nih_export_clap!(MonoMonitor);
 
 #[cfg(feature = "vst3")]
-nice_export_vst3!(MonoMonitor);
+nih_export_vst3!(MonoMonitor);

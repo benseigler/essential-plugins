@@ -5,7 +5,7 @@ members = [
     "plugins/exporter",
     "plugins/editor",
     "xtask",
-    "xpans_spe_nice",
+    "xpans_spe_nih",
     "plugins/stereo",
     "plugins/headphones",
     "plugins/mono",

@@ -12,6 +12,6 @@ clap = []
 vst3 = []
 
 [dependencies]
-nice-plug = { git = "https://codeberg.org/BillyDM/nice-plug.git" }
+nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git" }
 shared = { path = "../../shared" }
-xpans_spe_nice = { path = "../../xpans_spe_nice" }
+xpans_spe_nih = { path = "../../xpans_spe_nih" }

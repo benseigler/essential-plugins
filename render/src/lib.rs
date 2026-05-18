@@ -3,9 +3,9 @@ mod audio_input;
 mod audio_output;
 mod spatial_input;
 
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 use shared::sysex;
-use xpans_spe_nice::SpeBundle;
+use xpans_spe_nih::SpeBundle;
 use xpans_violet::{
     Renderer, SampleProcessor, SourceInterpreter, audio_input::AudioInput,
     audio_output::AudioOutput,

@@ -1,10 +1,10 @@
 use std::{num::NonZero, sync::Arc};
 
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
 
 use shared::PanLawOption;
-use xpans_spe_nice::SpeBundle;
+use xpans_spe_nih::SpeBundle;
 use xpans_stereo::{Directional, Positional, Processor, pan_law::PanLaw};
 use xpans_violet::{RendererBuilder, SourceInterpreter};
 
@@ -199,7 +199,7 @@ impl Vst3Plugin for StereoMonitor {
 }
 
 #[cfg(feature = "clap")]
-nice_export_clap!(StereoMonitor);
+nih_export_clap!(StereoMonitor);
 
 #[cfg(feature = "vst3")]
-nice_export_vst3!(StereoMonitor);
+nih_export_vst3!(StereoMonitor);

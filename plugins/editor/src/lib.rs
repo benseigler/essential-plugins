@@ -1,10 +1,10 @@
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 use passthru::spe_editor_passthru;
 use record::{Record, cartestian_changes_msg};
 use shared::PASSTHRU_LAYOUT;
 use std::sync::Arc;
-use xpans_spe_nice::spe::{AxisCombo, Message};
-use xpans_spe_nice::{SpeBundle, msg_to_event};
+use xpans_spe_nih::spe::{AxisCombo, Message};
+use xpans_spe_nih::{SpeBundle, msg_to_event};
 mod params;
 use crate::params::*;
 
@@ -107,7 +107,7 @@ impl ClapPlugin for SceneEditor {
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::Utility];
 }
 #[cfg(feature = "clap")]
-nice_export_clap!(SceneEditor);
+nih_export_clap!(SceneEditor);
 
 #[cfg(feature = "vst3")]
 impl Vst3Plugin for SceneEditor {
@@ -117,4 +117,4 @@ impl Vst3Plugin for SceneEditor {
         &[Vst3SubCategory::Spatial, Vst3SubCategory::Tools];
 }
 #[cfg(feature = "vst3")]
-nice_export_vst3!(SceneEditor);
+nih_export_vst3!(SceneEditor);

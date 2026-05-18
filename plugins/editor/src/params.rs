@@ -1,4 +1,4 @@
-use nice_plug::prelude::*;
+use nih_plug::prelude::*;
 #[derive(Params)]
 pub struct PluginParams {
     #[id = "Source ID"]

@@ -4,8 +4,8 @@ use std::{
 };
 
 use crossbeam_channel::{Receiver, Sender};
-use nice_plug_iced::{
-    EditorState, NiceGuiContext,
+use nih_plug_iced::{
+    EditorState, NihGuiContext,
     iced::{
         Theme,
         widget::{Column, button, column, text},
@@ -40,13 +40,13 @@ pub struct State {
 pub struct Ui {
     editor_state: EditorState<State>,
     #[allow(unused)]
-    nice_ctx: NiceGuiContext,
+    nih_ctx: NihGuiContext,
 }
 impl Ui {
-    pub fn new(editor_state: EditorState<State>, nice_ctx: NiceGuiContext) -> Self {
+    pub fn new(editor_state: EditorState<State>, nih_ctx: NihGuiContext) -> Self {
         Self {
             editor_state,
-            nice_ctx,
+            nih_ctx,
         }
     }
     pub fn update(&mut self, event: UiMessage) {

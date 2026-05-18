@@ -1,4 +1,4 @@
-use xpans_spe_nice::spe::{AxisCombo, Message};
+use xpans_spe_nih::spe::{AxisCombo, Message};
 
 use crate::params::PluginParams;
 
