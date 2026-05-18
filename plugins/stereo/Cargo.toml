@@ -12,7 +12,7 @@ clap = []
 vst3 = []
 
 [dependencies]
-nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git" }
+nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git", rev = "aad0bad18b5c4f82b69bfb3c80da7471854d7af0" }
 xpans_spe_nih = { path = "../../xpans_spe_nih" }
 xpans_violet = { version = "0.1.0", default-features = false }
 xpans_stereo = "0.1.0"

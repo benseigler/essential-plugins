@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git" }
+nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git", rev = "aad0bad18b5c4f82b69bfb3c80da7471854d7af0" }
 xpans_common_lr = "0.1.0"
