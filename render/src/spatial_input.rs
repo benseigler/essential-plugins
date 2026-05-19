@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use num::Float;
 
 use wreath::{Reader, RingReader, RingWriter, Writer, ring_buf};
@@ -7,10 +5,6 @@ use xpans_spe::ApplyMessage;
 use xpans_spe::Message;
 use xpans_violet::spatial_input::SpatialInput;
 use xpans_violet::{Connector, Source};
-
-pub struct PluginSources<T> {
-    phantom_data: PhantomData<T>,
-}
 
 pub struct SourcesViewer<T> {
     sources: RingReader<Source<T>>,
@@ -67,15 +61,17 @@ impl SourcesMutator<f32> {
     }
 }
 
-impl PluginSources<f32> {
-    pub fn new(sources: usize, buffer_length: usize) -> (SourcesMutator<f32>, SourcesViewer<f32>) {
-        let (reader, writer) = ring_buf(1, buffer_length * sources);
-        (
-            SourcesMutator::new(writer, sources),
-            SourcesViewer::new(reader, sources),
-        )
-    }
+pub fn plugin_sources(
+    sources: usize,
+    buffer_length: usize,
+) -> (SourcesMutator<f32>, SourcesViewer<f32>) {
+    let (reader, writer) = ring_buf(1, buffer_length * sources);
+    (
+        SourcesMutator::new(writer, sources),
+        SourcesViewer::new(reader, sources),
+    )
 }
+
 impl<T: Float + Copy + Default> SpatialInput for SourcesViewer<T> {
     type Scalar = T;
     fn source(&self, source: usize, frame: usize) -> Source<T> {

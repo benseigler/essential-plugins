@@ -1,7 +1,7 @@
 use std::{num::NonZero, sync::Arc};
 
 use nih_plug::prelude::*;
-use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
+use render::{PluginInputViewer, PluginOutput, RenderHandler, plugin_input, plugin_sources};
 use shared::PanLawOption;
 use xpans_headphones::distance::{DistanceCurve, Exponential, Linear, SquareRoot};
 use xpans_headphones::{Interpreter, Processor, pan_law::PanLaw};
@@ -176,8 +176,8 @@ impl Plugin for HeadphoneMonitor {
         );
         let delay_len = (sample_rate as usize / 1000) + 1;
         let (audio_mutator, audio_viewer) =
-            PluginInput::new(delay_len, buffer_length, sample_rate, 128);
-        let (sources_mutator, sources_viewer) = PluginSources::new(128, buffer_length);
+            plugin_input(delay_len, buffer_length, sample_rate, 128);
+        let (sources_mutator, sources_viewer) = plugin_sources(128, buffer_length);
         let input = LinearInterpolator::new(audio_viewer);
         let builder = RendererBuilder::new();
         let renderer = builder
