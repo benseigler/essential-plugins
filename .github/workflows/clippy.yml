@@ -1,0 +1,33 @@
+name: Clippy
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
+
+jobs:
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update; 
+        sudo apt-get install --assume-yes \
+          libx11-dev \
+          libx11-xcb-dev \
+          libgl1-mesa-dev \
+          libxcb1-dev \
+          libxcb-dri2-0-dev \
+          libxcb-icccm4-dev \
+          libxcursor-dev \
+          libwayland-dev
+          
+    - uses: actions/checkout@v6
+    
+    - name: Run Clippy
+      run: cargo clippy --all-features --verbose
