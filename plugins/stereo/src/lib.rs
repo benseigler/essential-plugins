@@ -1,6 +1,6 @@
 use std::{num::NonZero, sync::Arc};
 
-use nih_plug::{debug, prelude::*};
+use nih_plug::prelude::*;
 use render::{PluginInputViewer, PluginOutput, RenderHandler, plugin_input, plugin_sources};
 
 use shared::PanLawOption;
@@ -21,22 +21,6 @@ struct StereoMonitor {
     render_handler: Option<RenderHandlerType>,
     previous_pan_law: PanLawOption,
     previous_stereo_mode: StereoModeOption,
-}
-
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
-enum StereoModeOption {
-    #[default]
-    Directional,
-    Positional,
-}
-
-impl StereoModeOption {
-    fn get_dyn(&self) -> StereoInterpreter<f32> {
-        match self {
-            Self::Directional => Box::new(Directional::default()),
-            Self::Positional => Box::new(Positional::default()),
-        }
-    }
 }
 
 impl StereoMonitor {
@@ -60,6 +44,22 @@ impl StereoMonitor {
     }
 }
 
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
+enum StereoModeOption {
+    #[default]
+    Directional,
+    Positional,
+}
+
+impl StereoModeOption {
+    fn get_dyn(&self) -> StereoInterpreter<f32> {
+        match self {
+            Self::Directional => Box::new(Directional::default()),
+            Self::Positional => Box::new(Positional::default()),
+        }
+    }
+}
+
 #[derive(Params)]
 struct PluginParams {
     #[id = "Pan Law"]
@@ -67,6 +67,7 @@ struct PluginParams {
     #[id = "Stereo Mode"]
     stereo_mode: EnumParam<StereoModeOption>,
 }
+
 impl Default for PluginParams {
     fn default() -> Self {
         Self {
