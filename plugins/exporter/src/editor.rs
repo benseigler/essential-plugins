@@ -81,7 +81,7 @@ impl State {
                     return self.send_message(FromEditorMessage::ExportUnarm);
                 }
                 self.exporting = true;
-                return self.send_message(FromEditorMessage::ExportArm);
+                self.send_message(FromEditorMessage::ExportArm);
             }
             UiMessage::SetSceneStart => {
                 self.send_message(FromEditorMessage::SetSceneStart);

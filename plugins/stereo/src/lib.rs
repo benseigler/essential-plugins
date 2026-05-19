@@ -22,15 +22,11 @@ struct StereoMonitor {
     previous_stereo_mode: StereoModeOption,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
 enum StereoModeOption {
+    #[default]
     Directional,
     Positional,
-}
-impl Default for StereoModeOption {
-    fn default() -> Self {
-        Self::Directional
-    }
 }
 
 impl StereoModeOption {
@@ -90,8 +86,8 @@ impl Default for PluginParams {
     }
 }
 
-const ALL_IN: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
-const ALL_OUT: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
+const ALL_IN: NonZero<u32> = NonZero::new(128).unwrap();
+const ALL_OUT: NonZero<u32> = NonZero::new(128).unwrap();
 
 const LAYOUT: AudioIOLayout = AudioIOLayout {
     main_input_channels: Some(ALL_IN),

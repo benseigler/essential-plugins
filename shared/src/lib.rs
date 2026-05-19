@@ -12,8 +12,8 @@ pub const PASSTHRU_LAYOUT: AudioIOLayout = AudioIOLayout {
 };
 
 pub const STEREO: AudioIOLayout = AudioIOLayout {
-    main_input_channels: Some(unsafe { NonZeroU32::new_unchecked(2) }),
-    main_output_channels: Some(unsafe { NonZeroU32::new_unchecked(2) }),
+    main_input_channels: Some(NonZeroU32::new(2).unwrap()),
+    main_output_channels: Some(NonZeroU32::new(2).unwrap()),
     aux_output_ports: &[],
     aux_input_ports: &[],
     names: PortNames {
@@ -125,20 +125,15 @@ pub fn passthrough_events<C: ProcessContext<P>, P: Plugin>(context: &mut C) {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
 pub enum PanLawOption {
     #[name = "-6dB Linear"]
     Linear,
+    #[default]
     #[name = "-3dB Sine"]
     Sine,
     #[name = "-3dB Square Root"]
     SquareRoot,
-}
-
-impl Default for PanLawOption {
-    fn default() -> Self {
-        Self::Sine
-    }
 }
 
 impl PanLawOption {

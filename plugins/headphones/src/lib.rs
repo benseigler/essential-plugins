@@ -47,19 +47,15 @@ impl HeadphoneMonitor {
     }
 }
 
-#[derive(Enum, PartialEq, Eq)]
+#[derive(Default, Enum, PartialEq, Eq)]
 enum DistanceCurveOption {
     #[name = "Linear"]
     Linear,
+    #[default]
     #[name = "Exponential"]
     Exponential,
     #[name = "Square Root"]
     SquareRoot,
-}
-impl Default for DistanceCurveOption {
-    fn default() -> Self {
-        Self::Exponential
-    }
 }
 
 impl DistanceCurveOption {
@@ -118,8 +114,8 @@ impl Default for PluginParams {
     }
 }
 
-const ALL_IN: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
-const ALL_OUT: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
+const ALL_IN: NonZero<u32> = NonZero::new(128).unwrap();
+const ALL_OUT: NonZero<u32> = NonZero::new(128).unwrap();
 
 const LAYOUT: AudioIOLayout = AudioIOLayout {
     main_input_channels: Some(ALL_IN),
