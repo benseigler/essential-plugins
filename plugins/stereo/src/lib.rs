@@ -1,6 +1,6 @@
 use std::{num::NonZero, sync::Arc};
 
-use nih_plug::prelude::*;
+use nih_plug::{debug, prelude::*};
 use render::{PluginInputViewer, PluginOutput, RenderHandler, plugin_input, plugin_sources};
 
 use shared::PanLawOption;
@@ -15,6 +15,7 @@ type RenderHandlerType = RenderHandler<
     PluginInputViewer<f32>,
 >;
 
+#[derive(Default)]
 struct StereoMonitor {
     params: Arc<PluginParams>,
     render_handler: Option<RenderHandlerType>,
@@ -56,17 +57,6 @@ impl StereoMonitor {
             *interpreter_mut = new_stereo_mode.get_dyn();
         }
         self.previous_stereo_mode = new_stereo_mode;
-    }
-}
-
-impl Default for StereoMonitor {
-    fn default() -> Self {
-        Self {
-            params: Default::default(),
-            render_handler: None,
-            previous_pan_law: Default::default(),
-            previous_stereo_mode: Default::default(),
-        }
     }
 }
 
