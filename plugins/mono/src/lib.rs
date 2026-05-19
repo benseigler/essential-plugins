@@ -8,8 +8,8 @@ struct MonoMonitor {}
 #[derive(Params)]
 struct PluginParams {}
 
-const ALL_IN: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
-const STEREO_OUT: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
+const ALL_IN: NonZero<u32> = NonZero::new(128).unwrap();
+const STEREO_OUT: NonZero<u32> = NonZero::new(128).unwrap();
 
 const LAYOUT: AudioIOLayout = AudioIOLayout {
     main_input_channels: Some(ALL_IN),

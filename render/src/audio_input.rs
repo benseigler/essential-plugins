@@ -1,27 +1,23 @@
-use std::marker::PhantomData;
-
 use wreath::{MultiRingReader, MultiRingWriter, Reader, Writer, multi_ring_buf};
 use xpans_violet::{
     Connector,
     audio_input::{AudioInput, BufferedAudioInput},
 };
 
-pub struct PluginInput<T> {
-    phantom_data: PhantomData<T>,
-}
-impl<T: Default + Copy> PluginInput<T> {
-    pub fn new(
-        buffer_size: usize,
-        write_capacity: usize,
-        sample_rate: u32,
-        channels: usize,
-    ) -> (PluginInputMutator<T>, PluginInputViewer<T>) {
-        let (reader, writer) = multi_ring_buf(channels, buffer_size, write_capacity);
-        (
-            PluginInputMutator::new(writer),
-            PluginInputViewer::new(reader, sample_rate, channels),
-        )
-    }
+pub fn plugin_input<T>(
+    buffer_size: usize,
+    write_capacity: usize,
+    sample_rate: u32,
+    channels: usize,
+) -> (PluginInputMutator<T>, PluginInputViewer<T>)
+where
+    T: Default + Copy,
+{
+    let (reader, writer) = multi_ring_buf(channels, buffer_size, write_capacity);
+    (
+        PluginInputMutator::new(writer),
+        PluginInputViewer::new(reader, sample_rate, channels),
+    )
 }
 
 pub struct PluginInputViewer<T> {

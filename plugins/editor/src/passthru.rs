@@ -17,7 +17,7 @@ where
             for id in editing_ids {
                 collision |= *id == message.id;
             }
-            if collision == false {
+            if !collision {
                 context.send_event(event);
             }
         }

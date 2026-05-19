@@ -34,7 +34,7 @@ impl SysExMessage for SpeBundle {
 
     #[inline]
     fn from_buffer(buffer: &[u8]) -> Option<Self> {
-        let (id, msg) = read_message(&buffer)?;
+        let (id, msg) = read_message(buffer)?;
         Some(Self { id, msg })
     }
     #[inline]

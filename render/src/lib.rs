@@ -11,10 +11,10 @@ use xpans_violet::{
     audio_output::AudioOutput,
 };
 
-pub use crate::spatial_input::{PluginSources, SourcesMutator, SourcesViewer};
+pub use crate::spatial_input::{SourcesMutator, SourcesViewer, plugin_sources};
 
 pub use {
-    audio_input::{PluginInput, PluginInputMutator, PluginInputViewer},
+    audio_input::{PluginInputMutator, PluginInputViewer, plugin_input},
     audio_output::PluginOutput,
 };
 

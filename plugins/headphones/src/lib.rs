@@ -1,7 +1,7 @@
 use std::{num::NonZero, sync::Arc};
 
 use nih_plug::prelude::*;
-use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
+use render::{PluginInputViewer, PluginOutput, RenderHandler, plugin_input, plugin_sources};
 use shared::PanLawOption;
 use xpans_headphones::distance::{DistanceCurve, Exponential, Linear, SquareRoot};
 use xpans_headphones::{Interpreter, Processor, pan_law::PanLaw};
@@ -47,19 +47,15 @@ impl HeadphoneMonitor {
     }
 }
 
-#[derive(Enum, PartialEq, Eq)]
+#[derive(Default, Enum, PartialEq, Eq)]
 enum DistanceCurveOption {
     #[name = "Linear"]
     Linear,
+    #[default]
     #[name = "Exponential"]
     Exponential,
     #[name = "Square Root"]
     SquareRoot,
-}
-impl Default for DistanceCurveOption {
-    fn default() -> Self {
-        Self::Exponential
-    }
 }
 
 impl DistanceCurveOption {
@@ -118,8 +114,8 @@ impl Default for PluginParams {
     }
 }
 
-const ALL_IN: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
-const ALL_OUT: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
+const ALL_IN: NonZero<u32> = NonZero::new(128).unwrap();
+const ALL_OUT: NonZero<u32> = NonZero::new(128).unwrap();
 
 const LAYOUT: AudioIOLayout = AudioIOLayout {
     main_input_channels: Some(ALL_IN),
@@ -180,8 +176,8 @@ impl Plugin for HeadphoneMonitor {
         );
         let delay_len = (sample_rate as usize / 1000) + 1;
         let (audio_mutator, audio_viewer) =
-            PluginInput::new(delay_len, buffer_length, sample_rate, 128);
-        let (sources_mutator, sources_viewer) = PluginSources::new(128, buffer_length);
+            plugin_input(delay_len, buffer_length, sample_rate, 128);
+        let (sources_mutator, sources_viewer) = plugin_sources(128, buffer_length);
         let input = LinearInterpolator::new(audio_viewer);
         let builder = RendererBuilder::new();
         let renderer = builder

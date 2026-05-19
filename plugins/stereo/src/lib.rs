@@ -1,7 +1,7 @@
 use std::{num::NonZero, sync::Arc};
 
 use nih_plug::prelude::*;
-use render::{PluginInput, PluginInputViewer, PluginOutput, PluginSources, RenderHandler};
+use render::{PluginInputViewer, PluginOutput, RenderHandler, plugin_input, plugin_sources};
 
 use shared::PanLawOption;
 use xpans_spe_nih::SpeBundle;
@@ -15,31 +15,12 @@ type RenderHandlerType = RenderHandler<
     PluginInputViewer<f32>,
 >;
 
+#[derive(Default)]
 struct StereoMonitor {
     params: Arc<PluginParams>,
     render_handler: Option<RenderHandlerType>,
     previous_pan_law: PanLawOption,
     previous_stereo_mode: StereoModeOption,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
-enum StereoModeOption {
-    Directional,
-    Positional,
-}
-impl Default for StereoModeOption {
-    fn default() -> Self {
-        Self::Directional
-    }
-}
-
-impl StereoModeOption {
-    fn get_dyn(&self) -> StereoInterpreter<f32> {
-        match self {
-            Self::Directional => Box::new(Directional::default()),
-            Self::Positional => Box::new(Positional::default()),
-        }
-    }
 }
 
 impl StereoMonitor {
@@ -63,13 +44,18 @@ impl StereoMonitor {
     }
 }
 
-impl Default for StereoMonitor {
-    fn default() -> Self {
-        Self {
-            params: Default::default(),
-            render_handler: None,
-            previous_pan_law: Default::default(),
-            previous_stereo_mode: Default::default(),
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Enum)]
+enum StereoModeOption {
+    #[default]
+    Directional,
+    Positional,
+}
+
+impl StereoModeOption {
+    fn get_dyn(&self) -> StereoInterpreter<f32> {
+        match self {
+            Self::Directional => Box::new(Directional::default()),
+            Self::Positional => Box::new(Positional::default()),
         }
     }
 }
@@ -81,6 +67,7 @@ struct PluginParams {
     #[id = "Stereo Mode"]
     stereo_mode: EnumParam<StereoModeOption>,
 }
+
 impl Default for PluginParams {
     fn default() -> Self {
         Self {
@@ -90,8 +77,8 @@ impl Default for PluginParams {
     }
 }
 
-const ALL_IN: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
-const ALL_OUT: NonZero<u32> = unsafe { NonZero::new_unchecked(128) };
+const ALL_IN: NonZero<u32> = NonZero::new(128).unwrap();
+const ALL_OUT: NonZero<u32> = NonZero::new(128).unwrap();
 
 const LAYOUT: AudioIOLayout = AudioIOLayout {
     main_input_channels: Some(ALL_IN),
@@ -132,8 +119,8 @@ impl Plugin for StereoMonitor {
     ) -> bool {
         let sample_rate = buffer_config.sample_rate.round() as u32;
         let buffer_length = buffer_config.max_buffer_size as usize;
-        let (audio_mutator, audio_viewer) = PluginInput::new(1, buffer_length, sample_rate, 128);
-        let (sources_mutator, sources_viewer) = PluginSources::new(128, buffer_length);
+        let (audio_mutator, audio_viewer) = plugin_input(1, buffer_length, sample_rate, 128);
+        let (sources_mutator, sources_viewer) = plugin_sources(128, buffer_length);
 
         let stereo_mode_option = self.params.stereo_mode.value();
         let stereo_mode_dyn: StereoInterpreter<f32> = stereo_mode_option.get_dyn();
