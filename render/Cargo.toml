@@ -8,7 +8,7 @@ nih_plug = { git = "https://codeberg.org/BillyDM/nih-plug.git", rev = "aad0bad18
 xpans_spe_nih = { path = "../xpans_spe_nih" }
 shared = { path = "../shared" }
 xpans_render = "0.1.0"
-xpans_violet = "0.1.0"
+xpans_violet = { version = "0.1.0", default-features = false }
 xpans_spe = "0.1.0"
 num = "0.4.3"
 wreath = "0.1.0"
